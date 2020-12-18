@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 
 const fs = require("fs");
+const { dirname } = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -52,24 +53,22 @@ app.delete("/api/notes/:id", function(req, res) {
 
     // OPTION B
         // Use the array.filter() method to filter out the matching element
-        myArray = myArray.filter( element => element.id !== req.params.id);
+        // myArray = myArray.filter( element => element.id !== req.params.id);
 
     // Return any time of success message.
-    
+
 })
 
 app.get("/notes", function (req, res) {
 
     // return the contents of the index.html
-    res.sendFile( /**path to index.html file **/);
-
+    res.sendFile(path.join(__dirname, "public/notes.html"))
 })
 
 app.get("*", function (req, res) {
 
     // return the contents of the index.html
-    res.sendFile( /**path to index.html file **/);
-
+    res.sendFile(path.join(__dirname, "public/index.html"));
 })
 
 
