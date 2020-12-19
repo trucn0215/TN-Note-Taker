@@ -2,8 +2,8 @@ const express = require("express");
 const path = require("path");
 
 const fs = require("fs");
-const dbNotePath = require("./db/db.json");
-const { json } = require("express");
+const dbNote = require("./db/db.json");
+// const { json } = require("express");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -17,15 +17,10 @@ app.use(express.static("public"));
 // GET - read the db.json file and return all saved notes as JSON
 app.get("/api/notes", function (req, res) {
 
-    // Use the fs module to read the file
-    fs.readFile(dbNotePath, (err, data) => {
-        if (err) {
-            console.error(err);
-        }
-        const readData = JSON.parse(data)
-        console.log(readData);
-        return res.json(readData);
-    })
+    res.sendFile(path.join(__dirname, "/db/db.json"));
+
+    let savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
+    res.json(savedNotes);
 })
 
 // POST - receive a new note to save on the request body, add it to the db.json file, and then return the new note to the client.
@@ -34,19 +29,19 @@ app.post("/api/notes", function (req, res) {
     // Access the POSTed data in `req.body`
     const newNoteData = req.body;
 
-    // Use the fs module to write the file
-    fs.writeFile(path.join(__dirname, dbNote), newNoteData)
+    let savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
 
-    // THEN parse the file contects with JSON.parse() to get the real data.
+    savedNotes.push(newNoteData);
 
-    // PUSH the `req.body` to the array list.
-    dbNote.push(newNoteData);
+    let updateNote = JSON.stringify(savedNotes);
 
-    //JSON.stringify() the array list back into a JSON string
-
-    // THEN save the contects back to the `db.json` with the "fs" module
-
-    console.log(dbNote);
+    fs.writeFile("./db/db.json", updateNote, (err) => {
+        if (err) {
+            console.error(err);
+        }
+        console.log("Note added");
+        res.json(savedNotes);
+    })
 })
 
 
