@@ -2,8 +2,6 @@ const express = require("express");
 const path = require("path");
 
 const fs = require("fs");
-const dbNote = require("./db/db.json");
-// const { json } = require("express");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -17,9 +15,10 @@ app.use(express.static("public"));
 // GET - read the db.json file and return all saved notes as JSON
 app.get("/api/notes", function (req, res) {
 
-    res.sendFile(path.join(__dirname, "/db/db.json"));
+    // res.sendFile(path.join(__dirname, "/db/db.json"));
 
     let savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
+
     res.json(savedNotes);
 })
 
@@ -27,9 +26,17 @@ app.get("/api/notes", function (req, res) {
 app.post("/api/notes", function (req, res) {
 
     // Access the POSTed data in `req.body`
-    const newNoteData = req.body;
 
     let savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
+    
+    let newNoteData = req.body;
+    console.log(newNoteData);
+
+    let makeId = (savedNotes.length).toString();
+
+    newNoteData.id = makeId;
+
+    console.log(makeId);
 
     savedNotes.push(newNoteData);
 
