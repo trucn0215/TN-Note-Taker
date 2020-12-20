@@ -19,9 +19,7 @@ app.get("/api/notes", function (req, res) {
 
         let savedNotes = JSON.parse(data);
         res.json(savedNotes);
-
     });
-
 })
 
 // POST - receive a new note to save on the request body, add it to the db.json file, and then return the new note to the client.
@@ -60,7 +58,7 @@ app.delete("/api/notes/:id", function (req, res) {
     // Access :id from `req.params.id`
     const noteId = req.params.id;
 
-    console.log(noteId);
+    // console.log(noteId);
 
     // Use the fs module to read the file
     fs.readFile("./db/db.json", "utf8", function (err, data) {
@@ -68,19 +66,22 @@ app.delete("/api/notes/:id", function (req, res) {
 
         // THEN parse the file contects with JSON.parse() to get the real data.
         const savedNotes = JSON.parse(data);
-        console.log(savedNotes);
+        // console.log(savedNotes);
 
         // Use the array.filter() method to filter out the matching element
-        const newNoteArray = savedNotes.filter(note => note.id !== noteId) 
-        
-        console.log(newNoteArray);
+        const newNoteArray = savedNotes.filter(note => note.id !== noteId)
+        // console.log(newNoteArray);
 
+        const updateNewNote = JSON.stringify(newNoteArray);
+
+        // write updated note array back to db after delete
+        fs.writeFile("./db/db.json", updateNewNote, (err) => {
+            if (err) throw err;
+            res.json(savedNotes);
+        })
 
         console.log("Note deleted");
     })
-
-    // Return any time of success message.
-
 })
 
 app.get("/notes", function (req, res) {
@@ -94,8 +95,6 @@ app.get("*", function (req, res) {
     // return the contents of the index.html
     res.sendFile(path.join(__dirname, "public/index.html"));
 })
-
-
 
 app.listen(PORT, function () {
     console.log("App listening to PORT " + PORT)
