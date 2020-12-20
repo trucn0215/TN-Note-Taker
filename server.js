@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
-const uuidv1 = require ("uuidv1");
-
+const uuidv1 = require("uuidv1");
 const fs = require("fs");
 
 const app = express();
@@ -9,51 +8,58 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 app.use(express.static("public"));
 
 // API rountes
 // GET - read the db.json file and return all saved notes as JSON
 app.get("/api/notes", function (req, res) {
 
-    // res.sendFile(path.join(__dirname, "/db/db.json"));
+    fs.readFile("./db/db.json", "utf8", function (err, data) {
+        if (err) throw err;
 
-    let savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
-
+        let savedNotes = JSON.parse(data);
     res.json(savedNotes);
+
+    });
+
 })
 
 // POST - receive a new note to save on the request body, add it to the db.json file, and then return the new note to the client.
 app.post("/api/notes", function (req, res) {
 
-    let savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
-    let newNoteData = req.body;
+    fs.readFile("./db/db.json", "utf8", function (err, data) {
+        if (err) throw err;
 
-    // console.log(newNoteData);
+        let savedNotes = JSON.parse(data);
+        let newNoteData = req.body;
 
-    let makeId = uuidv1();
+        // console.log(newNoteData);
 
-    newNoteData.id = makeId;
+        let makeId = uuidv1();
 
-    // console.log(makeId);
+        newNoteData.id = makeId;
 
-    savedNotes.push(newNoteData);
+        // console.log(makeId);
 
-    let updateNote = JSON.stringify(savedNotes);
+        savedNotes.push(newNoteData);
 
-    fs.writeFile("./db/db.json", updateNote, (err) => {
-        if (err) {
-            console.error(err);
-        }
-        console.log("Note added");
-        res.json(savedNotes);
+        let updateNote = JSON.stringify(savedNotes);
+
+        fs.writeFile("./db/db.json", updateNote, (err) => {
+            if (err) {
+                console.error(err);
+            }
+            console.log("Note added");
+            res.json(savedNotes);
+        })
     })
-})
+});
 
 // DELETE - receive a query parameter containing ID of a note to delete.
-app.delete("/api/notes/:id", function(req, res) {
+// app.delete("/api/notes/:id", function(req, res) {
 
 // Access :id from `req.params.id`
+// console.log(req.params.id);
 
 // Use the fs module to read the file
 
@@ -70,7 +76,7 @@ app.delete("/api/notes/:id", function(req, res) {
 
 // Return any time of success message.
 
-})
+// })
 
 app.get("/notes", function (req, res) {
 
