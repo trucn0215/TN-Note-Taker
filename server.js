@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const uuidv1 = require ("uuidv1");
 
 const fs = require("fs");
 
@@ -25,18 +26,16 @@ app.get("/api/notes", function (req, res) {
 // POST - receive a new note to save on the request body, add it to the db.json file, and then return the new note to the client.
 app.post("/api/notes", function (req, res) {
 
-    // Access the POSTed data in `req.body`
-
     let savedNotes = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
-    
     let newNoteData = req.body;
-    console.log(newNoteData);
 
-    let makeId = (savedNotes.length).toString();
+    // console.log(newNoteData);
+
+    let makeId = uuidv1();
 
     newNoteData.id = makeId;
 
-    console.log(makeId);
+    // console.log(makeId);
 
     savedNotes.push(newNoteData);
 
@@ -51,9 +50,8 @@ app.post("/api/notes", function (req, res) {
     })
 })
 
-
 // DELETE - receive a query parameter containing ID of a note to delete.
-// app.delete("/api/notes/:id", function(req, res) {
+app.delete("/api/notes/:id", function(req, res) {
 
 // Access :id from `req.params.id`
 
@@ -72,7 +70,7 @@ app.post("/api/notes", function (req, res) {
 
 // Return any time of success message.
 
-// })
+})
 
 app.get("/notes", function (req, res) {
 
