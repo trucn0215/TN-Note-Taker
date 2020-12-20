@@ -18,7 +18,7 @@ app.get("/api/notes", function (req, res) {
         if (err) throw err;
 
         let savedNotes = JSON.parse(data);
-    res.json(savedNotes);
+        res.json(savedNotes);
 
     });
 
@@ -46,9 +46,8 @@ app.post("/api/notes", function (req, res) {
         let updateNote = JSON.stringify(savedNotes);
 
         fs.writeFile("./db/db.json", updateNote, (err) => {
-            if (err) {
-                console.error(err);
-            }
+            if (err) throw err;
+
             console.log("Note added");
             res.json(savedNotes);
         })
@@ -56,27 +55,33 @@ app.post("/api/notes", function (req, res) {
 });
 
 // DELETE - receive a query parameter containing ID of a note to delete.
-// app.delete("/api/notes/:id", function(req, res) {
+app.delete("/api/notes/:id", function (req, res) {
 
-// Access :id from `req.params.id`
-// console.log(req.params.id);
+    // Access :id from `req.params.id`
+    const noteId = req.params.id;
 
-// Use the fs module to read the file
+    console.log(noteId);
 
-// THEN parse the file contects with JSON.parse() to get the real data.
+    // Use the fs module to read the file
+    fs.readFile("./db/db.json", "utf8", function (err, data) {
+        if (err) throw err
 
-// OPTION A
-// Find the matching index using findIndex()
+        // THEN parse the file contects with JSON.parse() to get the real data.
+        const savedNotes = JSON.parse(data);
+        console.log(savedNotes);
 
-// Remove thetarget element using .splice()
+        // Use the array.filter() method to filter out the matching element
+        const newNoteArray = savedNotes.filter(note => note.id !== noteId) 
+        
+        console.log(newNoteArray);
 
-// OPTION B
-// Use the array.filter() method to filter out the matching element
-// myArray = myArray.filter( element => element.id !== req.params.id);
 
-// Return any time of success message.
+        console.log("Note deleted");
+    })
 
-// })
+    // Return any time of success message.
+
+})
 
 app.get("/notes", function (req, res) {
 
